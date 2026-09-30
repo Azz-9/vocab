@@ -233,7 +233,8 @@ button:hover:not(:disabled) {
 	margin: 8px auto;
 	display: flex;
 	align-items: center;
-	justify-content: center
+	justify-content: center;
+	padding: 0;
 }
 
 .choices {
