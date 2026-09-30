@@ -266,9 +266,9 @@ function showQuestion() {
       ${audioBtnHTML(variant.audio)}
       <div class="type-row"><input type="text" id="answer-input" autocomplete="off"><button id="submit-btn">Valider</button></div>
       <div style="margin-top:10px">${cantListenHTML()}</div>`;
-		el('submit-btn').onclick = () => checkTyped(el('answer-input').value, [variant.word]);
+		el('submit-btn').onclick = () => checkTyped(el('answer-input').value, [variant.word], term.fr[0]);
 		el('answer-input').onkeydown = e => {
-			if (e.key === 'Enter') checkTyped(el('answer-input').value, [variant.word]);
+			if (e.key === 'Enter') checkTyped(el('answer-input').value, [variant.word], term.fr[0]);
 		};
 		bindAudioControls();
 		renderIcons(card);
@@ -293,7 +293,7 @@ function showQuestion() {
 		const choices = shuffle([correct, ...randomDistractors(term, enExtractor, 3)]);
 		card.innerHTML = `<p class="hint">Écoute et choisis le mot en anglais</p>${audioBtnHTML(variant.audio)}<div>${cantListenHTML()}</div>
       <div class="choices">${choices.map(c => `<button class="choice-btn">${c}</button>`).join('')}</div>`;
-		bindChoices(correct, [correct]);
+		bindChoices(correct, [correct], term.fr[0]);
 		bindAudioControls();
 		renderIcons(card);
 	}
@@ -330,21 +330,23 @@ function stripParens(s) {
 	return s.replace(/\s+/g, ' ').trim();
 }
 
-function checkTyped(value, acceptedList) {
+function checkTyped(value, acceptedList, frText) {
 	if (SELECTED_ANSWER_LOCKED) return;
 	SELECTED_ANSWER_LOCKED = true;
 	const ok = acceptedList.some(a => normalize(stripParens(a)) === normalize(value));
-	registerResult(ok, acceptedList.join(' / '));
+	registerResult(ok, acceptedList.join(' / '), frText);
 }
 
-function registerResult(ok, correctText) {
+function registerResult(ok, correctText, frText) {
 	if (ok) SCORE++;
 	REVIEW.push({term: CUR_TERM, ok, correctText});
 	const fb = el('feedback');
 	fb.classList.remove('hidden', 'ok', 'ko');
 	fb.classList.add(ok ? 'ok' : 'ko');
+	const mainText = ok ? 'Correct !' : `Faux — réponse : ${correctText}`;
+	const frHint = frText ? ` <span class="fr-hint">(${frText})</span>` : '';
 	fb.innerHTML = `<span class="icon-wrap ${ok ? 'icon-correct' : 'icon-wrong'}" data-icon="${ok ? 'correct' : 'wrong'}"></span>
-    <span>${ok ? 'Correct !' : `Faux — réponse : ${correctText}`}</span>`;
+    <span>${mainText}${frHint}</span>`;
 	renderIcons(fb);
 	el('next-btn').classList.remove('hidden');
 }
