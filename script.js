@@ -201,6 +201,20 @@ el('infinite-cb').addEventListener('change', e => {
 });
 el('stop-btn').addEventListener('click', showResults);
 
+// Entrée : valide la réponse une première fois, puis passe à la question suivante.
+// Écouteur en phase de CAPTURE, posé sur document : il s'exécute avant le onkeydown
+// de l'input (qui, lui, se déclenche pendant la phase "at target"). Comme ça, si la
+// question est déjà verrouillée, on court-circuite l'événement avant qu'il n'atteigne
+// l'input et ne déclenche une seconde validation dans la foulée.
+document.addEventListener('keydown', e => {
+	if (e.key !== 'Enter') return;
+	if (SELECTED_ANSWER_LOCKED && !el('next-btn').classList.contains('hidden')) {
+		e.preventDefault();
+		e.stopPropagation();
+		nextQuestion();
+	}
+}, true);
+
 function audioBtnHTML(src) {
 	return `<button type="button" class="audio-btn" data-audio="${src}"><span class="icon-wrap icon-sound" data-icon="sound"></span></button>`;
 }
@@ -306,10 +320,20 @@ function normalize(s) {
 	return s.trim().toLowerCase();
 }
 
+// Enlève le contenu entre parenthèses (y compris imbriquées), ex: "Cart (US) (trolley (UK))" -> "Cart"
+function stripParens(s) {
+	let prev;
+	do {
+		prev = s;
+		s = s.replace(/\([^()]*\)/g, '');
+	} while (s !== prev);
+	return s.replace(/\s+/g, ' ').trim();
+}
+
 function checkTyped(value, acceptedList) {
 	if (SELECTED_ANSWER_LOCKED) return;
 	SELECTED_ANSWER_LOCKED = true;
-	const ok = acceptedList.some(a => normalize(a) === normalize(value));
+	const ok = acceptedList.some(a => normalize(stripParens(a)) === normalize(value));
 	registerResult(ok, acceptedList.join(' / '));
 }
 

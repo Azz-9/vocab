@@ -26,6 +26,12 @@ Quand une question affiche un seul mot anglais (QCM EN → FR, ou audio), l'appl
 ## Mode sombre
 Le bouton en haut à droite bascule entre clair/sombre ; le choix est mémorisé dans le `localStorage` (clé `theme`) et réappliqué au rechargement. Sans préférence enregistrée, l'appli suit le thème du système.
 
+## Raccourci clavier
+Sur une question à réponse tapée, Entrée valide la réponse ; une fois la correction affichée, Entrée (ou le bouton Suivant) passe à la question suivante — ça marche aussi après une réponse en QCM.
+
+## Normalisation des réponses tapées
+Certains mots du JSON contiennent des précisions entre parenthèses (ex: `"Blow (blew, blown)"`, `"Cart (US) (trolley (UK))"`). Lors de la correction d'une réponse tapée, tout le contenu entre parenthèses est retiré avant comparaison (y compris les parenthèses imbriquées), donc l'utilisateur n'a qu'à taper `Blow` ou `Cart`. Le texte complet (avec parenthèses) reste affiché dans le feedback pour information.
+
 ## Mode infini
 La case « Mode infini » sur l'écran de sélection ignore le nombre de questions : les questions sont générées à la volée sans limite. Un bouton « Arrêter » apparaît pendant le quiz pour terminer à tout moment et afficher le score obtenu sur le nombre de questions réellement faites.
 
