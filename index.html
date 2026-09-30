@@ -20,11 +20,23 @@
 			<label for="q-count">Nombre de questions</label>
 			<input type="number" id="q-count" min="5" max="100" value="15">
 		</div>
+		<label class="checkbox-row"><input type="checkbox" id="infinite-cb"> Mode infini (s'arrête quand je
+			veux)</label>
+
+		<details class="weights-details">
+			<summary>Pondération des types de questions</summary>
+			<p class="hint">Plus le nombre est élevé, plus ce type de question a de chances d'apparaître. 0 =
+				désactivé.</p>
+			<div id="weights"></div>
+		</details>
+
 		<button id="start-btn" disabled>Commencer</button>
 	</section>
 
 	<section id="quiz-screen" class="hidden">
-		<div class="progress"><span id="progress-text"></span></div>
+		<div class="progress"><span id="progress-text"></span>
+			<button id="stop-btn" class="link-btn hidden">Arrêter</button>
+		</div>
 		<div id="question-card" class="card"></div>
 		<div id="feedback" class="feedback hidden"></div>
 		<button id="next-btn" class="hidden">Suivant</button>

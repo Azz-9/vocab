@@ -156,10 +156,53 @@ button:hover:not(:disabled) {
 	background: none
 }
 
+.checkbox-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 16px;
+	color: var(--muted);
+	font-size: .9rem
+}
+
+.weights-details {
+	margin-bottom: 16px;
+	background: var(--card);
+	border: 1px solid var(--border);
+	border-radius: 10px;
+	padding: 12px 14px
+}
+
+.weights-details summary {
+	cursor: pointer;
+	font-weight: 600
+}
+
+.weight-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	padding: 6px 0
+}
+
+.weight-row label {
+	color: var(--text);
+	font-size: .92rem
+}
+
+.weight-row input {
+	width: 70px;
+	padding: 6px
+}
+
 .progress {
 	color: var(--muted);
 	margin-bottom: 10px;
-	font-size: .9rem
+	font-size: .9rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between
 }
 
 .card {

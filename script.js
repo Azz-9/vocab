@@ -1,10 +1,18 @@
-// ==== Poids des types de questions (ajustables) ====
+// ==== Poids par défaut des types de questions (ajustables aussi dans l'UI, écran de sélection) ====
 const WEIGHTS = {
 	fr_to_en_type: 3,     // FR -> EN, réponse tapée
 	en_to_fr_choice: 3,   // EN -> FR, QCM
 	audio_to_en_choice: 2,// audio -> EN, QCM (nécessite "audio")
 	audio_to_fr_choice: 2,// audio -> FR, QCM (nécessite "audio")
 	audio_type_en: 1      // audio -> EN, réponse tapée (nécessite "audio")
+};
+
+const TYPE_LABELS = {
+	fr_to_en_type: 'FR → EN (texte)',
+	en_to_fr_choice: 'EN → FR (QCM)',
+	audio_to_en_choice: 'Audio → EN (QCM)',
+	audio_to_fr_choice: 'Audio → FR (QCM)',
+	audio_type_en: 'Audio → EN (texte)'
 };
 
 const AUDIO_BLOCK_MS = 15 * 60 * 1000;
@@ -36,6 +44,23 @@ function applyTheme(theme) {
 }
 
 initTheme();
+
+// ---- Réglage des poids dans l'interface ----
+function buildWeightsUI() {
+	const container = el('weights');
+	container.innerHTML = Object.entries(WEIGHTS).map(([key, val]) => `
+    <div class="weight-row">
+      <label for="w-${key}">${TYPE_LABELS[key] || key}</label>
+      <input type="number" id="w-${key}" min="0" max="10" step="1" value="${val}" data-type="${key}">
+    </div>`).join('');
+	container.querySelectorAll('input').forEach(inp => {
+		inp.addEventListener('input', () => {
+			WEIGHTS[inp.dataset.type] = Math.max(0, Math.round(+inp.value) || 0);
+		});
+	});
+}
+
+buildWeightsUI();
 
 // ---- Icônes SVG inline ----
 const ICONS = {};
@@ -160,14 +185,21 @@ const enExtractor = t => randomEnVariant(t).word;
 
 function startQuiz() {
 	buildPool();
-	TOTAL = Math.min(+el('q-count').value || 15, POOL.length * 3);
+	const infinite = el('infinite-cb').checked;
+	TOTAL = infinite ? Infinity : Math.min(+el('q-count').value || 15, POOL.length * 3);
 	CURRENT = 0;
 	SCORE = 0;
 	REVIEW = [];
 	el('selection-screen').classList.add('hidden');
 	el('quiz-screen').classList.remove('hidden');
+	el('stop-btn').classList.toggle('hidden', !infinite);
 	generateAndShowQuestion();
 }
+
+el('infinite-cb').addEventListener('change', e => {
+	el('q-count').disabled = e.target.checked;
+});
+el('stop-btn').addEventListener('click', showResults);
 
 function audioBtnHTML(src) {
 	return `<button type="button" class="audio-btn" data-audio="${src}"><span class="icon-wrap icon-sound" data-icon="sound"></span></button>`;
@@ -200,7 +232,7 @@ function showQuestion() {
 	SELECTED_ANSWER_LOCKED = false;
 	el('feedback').classList.add('hidden');
 	el('next-btn').classList.add('hidden');
-	el('progress-text').textContent = `Question ${CURRENT + 1} / ${TOTAL} — Score: ${SCORE}`;
+	el('progress-text').textContent = `Question ${CURRENT + 1}${isFinite(TOTAL) ? ' / ' + TOTAL : ''} — Score: ${SCORE}`;
 	const term = CUR_TERM, type = CUR_TYPE;
 	const card = el('question-card');
 
@@ -302,7 +334,7 @@ function nextQuestion() {
 function showResults() {
 	el('quiz-screen').classList.add('hidden');
 	el('results-screen').classList.remove('hidden');
-	el('score-text').textContent = `${SCORE} / ${TOTAL}`;
+	el('score-text').textContent = `${SCORE} / ${REVIEW.length}`;
 	const rev = el('review');
 	rev.innerHTML = REVIEW.map(q => `
     <div class="item ${q.ok ? '' : 'ko'}">

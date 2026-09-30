@@ -26,15 +26,20 @@ Quand une question affiche un seul mot anglais (QCM EN → FR, ou audio), l'appl
 ## Mode sombre
 Le bouton en haut à droite bascule entre clair/sombre ; le choix est mémorisé dans le `localStorage` (clé `theme`) et réappliqué au rechargement. Sans préférence enregistrée, l'appli suit le thème du système.
 
+## Mode infini
+La case « Mode infini » sur l'écran de sélection ignore le nombre de questions : les questions sont générées à la volée sans limite. Un bouton « Arrêter » apparaît pendant le quiz pour terminer à tout moment et afficher le score obtenu sur le nombre de questions réellement faites.
+
 ## Blocage audio
 Sur une question qui nécessite de l'audio, le bouton « Je ne peux pas écouter » désactive les types de questions audio (`audio_to_en_choice`, `audio_to_fr_choice`, `audio_type_en`) pendant 15 minutes (stocké dans `localStorage`, clé `audioBlockedUntil`) et régénère immédiatement une nouvelle question (sans pénalité).
 
 ## Ajuster les types de questions
-En haut de `script.js`, l'objet `WEIGHTS` contrôle le poids (probabilité relative) de chaque type :
+Sur l'écran de sélection, le bloc dépliable « Pondération des types de questions » permet de régler à la volée le poids (probabilité relative) de chaque type avant de lancer un test :
 - `fr_to_en_type` : mot FR → taper l'anglais
 - `en_to_fr_choice` : mot EN (+ phonétique/audio si dispo) → QCM français
 - `audio_to_en_choice` : audio → QCM anglais
 - `audio_to_fr_choice` : audio → QCM français
 - `audio_type_en` : audio → taper l'anglais (dictée)
 
-Les types `audio_*` ne sortent que pour les mots qui ont un champ `audio`, et pas du tout tant que le blocage de 15 min est actif. Change juste les chiffres pour rééquilibrer.
+Mettre un poids à 0 désactive complètement ce type. Les types `audio_*` ne sortent de toute façon que pour les mots qui ont un champ `audio`, et pas du tout tant que le blocage de 15 min est actif.
+
+Les valeurs par défaut (affichées au chargement) restent réglables dans le code, dans l'objet `WEIGHTS` en haut de `script.js`.
