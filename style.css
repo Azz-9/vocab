@@ -1,0 +1,311 @@
+:root {
+	--bg: #f6f7fb;
+	--card: #fff;
+	--text: #1f2430;
+	--muted: #6b7280;
+	--primary: #4f46e5;
+	--primary-d: #4338ca;
+	--good: #16a34a;
+	--bad: #dc2626;
+	--border: #e5e7eb;
+}
+
+html[data-theme="dark"] {
+	--bg: #14161f;
+	--card: #1e2130;
+	--text: #e6e7ec;
+	--muted: #9aa0ad;
+	--primary: #818cf8;
+	--primary-d: #6366f1;
+	--good: #4ade80;
+	--bad: #f87171;
+	--border: #31354a;
+}
+
+* {
+	box-sizing: border-box
+}
+
+body {
+	margin: 0;
+	font-family: system-ui, Segoe UI, Roboto, sans-serif;
+	background: var(--bg);
+	color: var(--text)
+}
+
+#app {
+	max-width: 640px;
+	margin: 0 auto;
+	padding: 24px 16px 60px
+}
+
+header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 20px
+}
+
+header h1 {
+	font-size: 1.5rem;
+	margin: 0
+}
+
+#theme-toggle {
+	background: var(--card);
+	color: var(--text);
+	border: 1px solid var(--border);
+	padding: 8px 12px;
+	font-size: .85rem
+}
+
+.hidden {
+	display: none !important
+}
+
+.hint {
+	color: var(--muted);
+	margin-bottom: 8px
+}
+
+.semester {
+	margin-bottom: 20px;
+	background: var(--card);
+	border: 1px solid var(--border);
+	border-radius: 10px;
+	padding: 14px
+}
+
+.semester h3 {
+	margin: 0 0 8px;
+	font-size: 1rem
+}
+
+.semester label.select-all {
+	font-weight: 600;
+	display: block;
+	margin-bottom: 6px
+}
+
+.cat-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 4px 0
+}
+
+.cat-row label {
+	flex: 1
+}
+
+.count {
+	color: var(--muted);
+	font-size: .85rem
+}
+
+.field {
+	margin: 16px 0
+}
+
+.field label {
+	display: block;
+	margin-bottom: 4px;
+	font-size: .9rem;
+	color: var(--muted)
+}
+
+input[type=number], input[type=text] {
+	width: 100%;
+	padding: 10px;
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	font-size: 1rem;
+	background: var(--card);
+	color: var(--text)
+}
+
+button {
+	cursor: pointer;
+	border: none;
+	border-radius: 8px;
+	padding: 12px 18px;
+	font-size: 1rem;
+	background: var(--primary);
+	color: #fff
+}
+
+button:disabled {
+	background: #9698a3;
+	cursor: not-allowed
+}
+
+button:hover:not(:disabled) {
+	background: var(--primary-d)
+}
+
+.link-btn {
+	background: none;
+	color: var(--muted);
+	text-decoration: underline;
+	padding: 4px;
+	font-size: .85rem
+}
+
+.link-btn:hover {
+	color: var(--text);
+	background: none
+}
+
+.progress {
+	color: var(--muted);
+	margin-bottom: 10px;
+	font-size: .9rem
+}
+
+.card {
+	background: var(--card);
+	border: 1px solid var(--border);
+	border-radius: 12px;
+	padding: 24px;
+	text-align: center
+}
+
+.prompt {
+	font-size: 1.4rem;
+	margin-bottom: 6px
+}
+
+.phonetic {
+	color: var(--muted);
+	font-size: .95rem;
+	margin-bottom: 10px
+}
+
+.audio-btn {
+	background: none;
+	border: 1px solid var(--border);
+	border-radius: 50%;
+	width: 40px;
+	height: 40px;
+	margin: 8px auto;
+	display: flex;
+	align-items: center;
+	justify-content: center
+}
+
+.choices {
+	display: grid;
+	gap: 10px;
+	margin-top: 16px
+}
+
+.choice-btn {
+	background: var(--card);
+	color: var(--text);
+	border: 2px solid var(--border);
+	text-align: left
+}
+
+.choice-btn:hover {
+	border-color: var(--primary)
+}
+
+.choice-btn.correct {
+	border-color: var(--good);
+	background: color-mix(in srgb, var(--good) 12%, var(--card))
+}
+
+.choice-btn.wrong {
+	border-color: var(--bad);
+	background: color-mix(in srgb, var(--bad) 12%, var(--card))
+}
+
+.type-row {
+	display: flex;
+	gap: 8px;
+	margin-top: 16px
+}
+
+.feedback {
+	margin-top: 14px;
+	padding: 10px;
+	border-radius: 8px;
+	font-weight: 600;
+	display: flex;
+	align-items: center;
+	gap: 8px
+}
+
+.feedback.ok {
+	background: color-mix(in srgb, var(--good) 12%, var(--bg));
+	color: var(--good)
+}
+
+.feedback.ko {
+	background: color-mix(in srgb, var(--bad) 12%, var(--bg));
+	color: var(--bad)
+}
+
+#next-btn {
+	margin-top: 14px
+}
+
+#review .item {
+	background: var(--card);
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	padding: 10px 14px;
+	margin-bottom: 8px;
+	text-align: left;
+	display: flex;
+	align-items: center;
+	gap: 8px
+}
+
+#review .item.ko {
+	border-color: var(--bad)
+}
+
+/* icônes svg injectées */
+.icon-wrap {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center
+}
+
+.icon-wrap svg {
+	display: block
+}
+
+.icon-sound {
+	width: 20px;
+	height: 20px
+}
+
+.icon-sound svg {
+	width: 100%;
+	height: 100%;
+	fill: var(--primary)
+}
+
+.icon-correct {
+	width: 18px;
+	height: 18px
+}
+
+.icon-correct svg {
+	width: 100%;
+	height: 100%;
+	fill: var(--good)
+}
+
+.icon-wrong {
+	width: 18px;
+	height: 18px
+}
+
+.icon-wrong svg {
+	width: 100%;
+	height: 100%;
+	fill: var(--bad)
+}

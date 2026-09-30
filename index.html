@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Vocab Trainer</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+	<header>
+		<h1>Vocab Trainer</h1>
+		<button id="theme-toggle" type="button"></button>
+	</header>
+
+	<section id="selection-screen">
+		<p class="hint">Choisis les catégories à réviser :</p>
+		<div id="semesters"></div>
+		<div class="field">
+			<label for="q-count">Nombre de questions</label>
+			<input type="number" id="q-count" min="5" max="100" value="15">
+		</div>
+		<button id="start-btn" disabled>Commencer</button>
+	</section>
+
+	<section id="quiz-screen" class="hidden">
+		<div class="progress"><span id="progress-text"></span></div>
+		<div id="question-card" class="card"></div>
+		<div id="feedback" class="feedback hidden"></div>
+		<button id="next-btn" class="hidden">Suivant</button>
+	</section>
+
+	<section id="results-screen" class="hidden">
+		<h2>Résultat</h2>
+		<p id="score-text"></p>
+		<div id="review"></div>
+		<button id="restart-btn">Recommencer</button>
+	</section>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
