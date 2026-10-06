@@ -276,15 +276,17 @@ function showQuestion() {
 		const correct = term.fr[0];
 		const choices = shuffle([correct, ...randomDistractors(term, frExtractor, 3)]);
 		let head = '';
+		let textHint = '';
 		if (type === 'en_to_fr_choice') {
 			const variant = randomEnVariant(term);
 			head = `<div class="prompt">${variant.word}</div>${variant.phonetic ? `<div class="phonetic">/${variant.phonetic}/</div>` : ''}${variant.audio ? audioBtnHTML(variant.audio) : ''}`;
 		} else {
 			const variant = randomAudioVariant(term);
 			head = `<p class="hint">Écoute et choisis la traduction</p>${audioBtnHTML(variant.audio)}<div>${cantListenHTML()}</div>`;
+			textHint = variant.word;
 		}
 		card.innerHTML = head + `<div class="choices">${choices.map(c => `<button class="choice-btn">${c}</button>`).join('')}</div>`;
-		bindChoices(correct, [correct]);
+		bindChoices(correct, [correct], textHint);
 		bindAudioControls();
 		renderIcons(card);
 	} else if (type === 'audio_to_en_choice') {
@@ -299,7 +301,7 @@ function showQuestion() {
 	}
 }
 
-function bindChoices(correct, acceptedList) {
+function bindChoices(correct, acceptedList, textHint) {
 	document.querySelectorAll('.choice-btn').forEach(btn => {
 		btn.onclick = () => {
 			if (SELECTED_ANSWER_LOCKED) return;
@@ -311,7 +313,7 @@ function bindChoices(correct, acceptedList) {
 					if (normalize(b.textContent) === normalize(correct)) b.classList.add('correct');
 				});
 			}
-			registerResult(ok, acceptedList.join(' / '));
+			registerResult(ok, acceptedList.join(' / '), textHint);
 		};
 	});
 }
@@ -330,23 +332,23 @@ function stripParens(s) {
 	return s.replace(/\s+/g, ' ').trim();
 }
 
-function checkTyped(value, acceptedList, frText) {
+function checkTyped(value, acceptedList, text) {
 	if (SELECTED_ANSWER_LOCKED) return;
 	SELECTED_ANSWER_LOCKED = true;
 	const ok = acceptedList.some(a => normalize(stripParens(a)) === normalize(value));
-	registerResult(ok, acceptedList.join(' / '), frText);
+	registerResult(ok, acceptedList.join(' / '), text);
 }
 
-function registerResult(ok, correctText, frText) {
+function registerResult(ok, correctText, text) {
 	if (ok) SCORE++;
 	REVIEW.push({term: CUR_TERM, ok, correctText});
 	const fb = el('feedback');
 	fb.classList.remove('hidden', 'ok', 'ko');
 	fb.classList.add(ok ? 'ok' : 'ko');
 	const mainText = ok ? 'Correct !' : `Faux — réponse : ${correctText}`;
-	const frHint = frText ? ` <span class="fr-hint">(${frText})</span>` : '';
+	const textHint = text ? ` <span class="text-hint">(${text})</span>` : '';
 	fb.innerHTML = `<span class="icon-wrap ${ok ? 'icon-correct' : 'icon-wrong'}" data-icon="${ok ? 'correct' : 'wrong'}"></span>
-    <span>${mainText}${frHint}</span>`;
+    <span>${mainText}${textHint}</span>`;
 	renderIcons(fb);
 	el('next-btn').classList.remove('hidden');
 }
