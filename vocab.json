@@ -3625,8 +3625,8 @@
                         "en": [
                             {
                                 "word": "IT (Information Technology)",
-                                "phonetic": "ɪt",
-                                "audio": "assets/audio/it.ogg"
+                                "phonetic": null,
+                                "audio": null
                             }
                         ],
                         "fr": [

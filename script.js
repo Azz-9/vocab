@@ -26,6 +26,8 @@ let SCORE = 0;
 let REVIEW = [];
 let CUR_TERM = null, CUR_TYPE = null;
 let SELECTED_ANSWER_LOCKED = false;
+let TERM_DECK = [];
+let LAST_TERM = null;
 
 const el = id => document.getElementById(id);
 
@@ -159,13 +161,23 @@ function hasAudio(term) {
 
 function pickType(term) {
 	const audioOk = hasAudio(term) && !isAudioBlocked();
-	const entries = Object.entries(WEIGHTS).filter(([t]) => audioOk || !t.startsWith('audio_'));
+	const entries = Object.entries(WEIGHTS)
+		.filter(([t, weight]) => weight > 0 && (audioOk || !t.startsWith('audio_')));
 	const total = entries.reduce((s, [, w]) => s + w, 0);
+
+	if (total <= 0) {
+		const fallback = Object.entries(WEIGHTS).filter(([t, w]) =>
+			w > 0 && !t.startsWith('audio_')
+		);
+		if (!fallback.length) return 'fr_to_en_type';
+		return fallback[Math.floor(Math.random() * fallback.length)][0];
+	}
+
 	let r = Math.random() * total;
 	for (const [t, w] of entries) {
-		if ((r -= w) <= 0) return t;
+		if ((r -= w) < 0) return t;
 	}
-	return entries[0][0];
+	return entries[entries.length - 1][0];
 }
 
 // extractor(term) -> string à utiliser comme distracteur
@@ -190,6 +202,8 @@ function startQuiz() {
 	CURRENT = 0;
 	SCORE = 0;
 	REVIEW = [];
+	TERM_DECK = shuffle(POOL);
+	LAST_TERM = null;
 	el('selection-screen').classList.add('hidden');
 	el('quiz-screen').classList.remove('hidden');
 	el('stop-btn').classList.toggle('hidden', !infinite);
@@ -235,8 +249,26 @@ function bindAudioControls() {
 	};
 }
 
+function drawTerm() {
+	if (TERM_DECK.length === 0) {
+		TERM_DECK = shuffle(POOL);
+
+		// Évite de reprendre le dernier mot au début du nouveau paquet.
+		if (TERM_DECK.length > 1 && TERM_DECK[0] === LAST_TERM) {
+			const swapIndex = 1 + Math.floor(
+				Math.random() * (TERM_DECK.length - 1)
+			);
+			[TERM_DECK[0], TERM_DECK[swapIndex]] =
+				[TERM_DECK[swapIndex], TERM_DECK[0]];
+		}
+	}
+
+	LAST_TERM = TERM_DECK.shift();
+	return LAST_TERM;
+}
+
 function generateAndShowQuestion() {
-	const term = POOL[Math.floor(Math.random() * POOL.length)];
+	const term = drawTerm();
 	CUR_TERM = term;
 	CUR_TYPE = pickType(term);
 	showQuestion();
@@ -301,18 +333,59 @@ function showQuestion() {
 	}
 }
 
+function getChoiceTranslation(choice, type) {
+	if (type === 'en_to_fr_choice' || type === 'audio_to_fr_choice') {
+		const term = POOL.find(t =>
+			t.fr.some(fr => normalize(fr) === normalize(choice))
+		);
+		return term ? term.en.map(w => w.word).join(' / ') : '';
+	}
+
+	if (type === 'audio_to_en_choice') {
+		const term = POOL.find(t =>
+			t.en.some(en => normalize(en.word) === normalize(choice))
+		);
+		return term ? term.fr.join(' / ') : '';
+	}
+
+	return '';
+}
+
+function revealChoiceTranslations() {
+	document.querySelectorAll('.choice-btn').forEach(btn => {
+		const choice = btn.dataset.choice;
+		const translation = getChoiceTranslation(choice, CUR_TYPE);
+
+		if (!translation || btn.querySelector('.choice-translation')) return;
+
+		const span = document.createElement('span');
+		span.className = 'choice-translation';
+		span.textContent = ` — ${translation}`;
+		btn.appendChild(span);
+	});
+}
+
 function bindChoices(correct, acceptedList, textHint) {
 	document.querySelectorAll('.choice-btn').forEach(btn => {
+		btn.dataset.choice = btn.textContent.trim();
+
 		btn.onclick = () => {
 			if (SELECTED_ANSWER_LOCKED) return;
 			SELECTED_ANSWER_LOCKED = true;
-			const ok = normalize(btn.textContent) === normalize(correct);
+
+			const selected = btn.dataset.choice;
+			const ok = normalize(selected) === normalize(correct);
 			btn.classList.add(ok ? 'correct' : 'wrong');
+
 			if (!ok) {
 				document.querySelectorAll('.choice-btn').forEach(b => {
-					if (normalize(b.textContent) === normalize(correct)) b.classList.add('correct');
+					if (normalize(b.dataset.choice) === normalize(correct)) {
+						b.classList.add('correct');
+					}
 				});
 			}
+
+			revealChoiceTranslations();
 			registerResult(ok, acceptedList.join(' / '), textHint);
 		};
 	});
