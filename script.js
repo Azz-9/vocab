@@ -16,7 +16,9 @@ const TYPE_LABELS = {
 };
 
 const AUDIO_BLOCK_MS = 15 * 60 * 1000;
-const AUDIO_BLOCK_KEY = 'audioBlockedUntil';
+const STORAGE_PREFIX = 'vocab-';
+const AUDIO_BLOCK_KEY = STORAGE_PREFIX + 'audioBlockedUntil';
+const LAST_SETTINGS_KEY = STORAGE_PREFIX + 'lastSettings';
 
 let DATA = null;
 let POOL = [];
@@ -33,7 +35,7 @@ const el = id => document.getElementById(id);
 
 // ---- Thème ----
 function initTheme() {
-	const saved = localStorage.getItem('theme');
+	const saved = localStorage.getItem(STORAGE_PREFIX + 'theme');
 	const theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 	applyTheme(theme);
 	el('theme-toggle').onclick = () => applyTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
@@ -41,7 +43,7 @@ function initTheme() {
 
 function applyTheme(theme) {
 	document.documentElement.dataset.theme = theme;
-	localStorage.setItem('theme', theme);
+	localStorage.setItem(STORAGE_PREFIX + 'theme', theme);
 	el('theme-toggle').textContent = theme === 'dark' ? 'Mode clair' : 'Mode sombre';
 }
 
@@ -63,6 +65,44 @@ function buildWeightsUI() {
 }
 
 buildWeightsUI();
+
+// ---- Stockage / restauration des settings du dernier quiz ----
+function saveLastSettings() {
+	const settings = {
+		selectedCategories: [],
+		infiniteMode: el('infinite-cb').checked
+	};
+	document.querySelectorAll('.cat-cb:checked').forEach(cb => {
+		settings.selectedCategories.push({sem: cb.dataset.sem, cat: cb.dataset.cat});
+	});
+	if (!settings.infiniteMode) {
+		settings.questionCount = +el('q-count').value;
+	}
+	localStorage.setItem(LAST_SETTINGS_KEY, JSON.stringify(settings));
+}
+
+function restoreLastSettings() {
+	try {
+		const saved = JSON.parse(localStorage.getItem(LAST_SETTINGS_KEY));
+		if (!saved) return;
+
+		if (saved.infiniteMode) {
+			el('infinite-cb').checked = true;
+			el('q-count').disabled = true;
+		} else if (saved.questionCount) {
+			el('q-count').value = saved.questionCount;
+		}
+
+		if (Array.isArray(saved.selectedCategories)) {
+			saved.selectedCategories.forEach(({sem, cat}) => {
+				const cb = document.querySelector(`.cat-cb[data-sem="${sem}"][data-cat="${cat}"]`);
+				if (cb) cb.checked = true;
+			});
+		}
+	} catch (e) {
+		// Ignore les erreurs de parsing
+	}
+}
 
 // ---- Icônes SVG inline ----
 const ICONS = {};
@@ -93,6 +133,8 @@ function blockAudio() {
 fetch('vocab.json').then(r => r.json()).then(json => {
 	DATA = json;
 	buildSelectionUI();
+	restoreLastSettings();
+	updateStartState();
 }).catch(() => {
 	el('semesters').innerHTML = '<p>Impossible de charger vocab.json</p>';
 });
@@ -101,18 +143,18 @@ function buildSelectionUI() {
 	const container = el('semesters');
 	container.innerHTML = '';
 	DATA.terms.forEach((categories, sIdx) => {
-		const div = document.createElement('div');
-		div.className = 'semester';
-		div.innerHTML = `<h3>Semestre ${sIdx + 1}</h3>
+		const details = document.createElement('details');
+		details.className = 'semester';
+		details.innerHTML = `<summary>Semestre ${sIdx + 1}</summary>
       <label class="select-all"><input type="checkbox" data-sem="${sIdx}" class="select-all-cb"> Tout sélectionner</label>`;
 		categories.forEach((cat, cIdx) => {
 			const row = document.createElement('div');
 			row.className = 'cat-row';
 			row.innerHTML = `<input type="checkbox" class="cat-cb" data-sem="${sIdx}" data-cat="${cIdx}">
         <label>${cat.name}</label><span class="count">${cat.list.length} mots</span>`;
-			div.appendChild(row);
+			details.appendChild(row);
 		});
-		container.appendChild(div);
+		container.appendChild(details);
 	});
 
 	container.addEventListener('change', e => {
@@ -123,13 +165,20 @@ function buildSelectionUI() {
 		updateStartState();
 	});
 
+	// Écouter les changements de poids pour mettre à jour le bouton start
+	container.closest('section').querySelector('#weights').addEventListener('input', () => {
+		updateStartState();
+	});
+
 	el('start-btn').addEventListener('click', startQuiz);
 	el('next-btn').addEventListener('click', nextQuestion);
 	el('restart-btn').addEventListener('click', () => location.reload());
 }
 
 function updateStartState() {
-	el('start-btn').disabled = document.querySelectorAll('.cat-cb:checked').length === 0;
+	const hasSelected = document.querySelectorAll('.cat-cb:checked').length > 0;
+	const hasWeight = Object.values(WEIGHTS).some(w => w > 0);
+	el('start-btn').disabled = !(hasSelected && hasWeight);
 }
 
 function buildPool() {
@@ -197,6 +246,7 @@ const enExtractor = t => randomEnVariant(t).word;
 
 function startQuiz() {
 	buildPool();
+	if (POOL.length === 0) return;
 	const infinite = el('infinite-cb').checked;
 	TOTAL = infinite ? Infinity : Math.min(+el('q-count').value || 15, POOL.length * 3);
 	CURRENT = 0;
@@ -204,6 +254,7 @@ function startQuiz() {
 	REVIEW = [];
 	TERM_DECK = shuffle(POOL);
 	LAST_TERM = null;
+	saveLastSettings();
 	el('selection-screen').classList.add('hidden');
 	el('quiz-screen').classList.remove('hidden');
 	el('stop-btn').classList.toggle('hidden', !infinite);

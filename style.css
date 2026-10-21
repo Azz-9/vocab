@@ -69,16 +69,19 @@ header h1 {
 }
 
 .semester {
-	margin-bottom: 20px;
+	margin-bottom: 12px;
 	background: var(--card);
 	border: 1px solid var(--border);
 	border-radius: 10px;
-	padding: 14px
+	padding: 12px 14px
 }
 
-.semester h3 {
-	margin: 0 0 8px;
-	font-size: 1rem
+.semester summary {
+	cursor: pointer;
+	font-weight: 600;
+	font-size: 1rem;
+	margin: -12px -14px 10px;
+	padding: 10px 14px
 }
 
 .semester label.select-all {
@@ -122,6 +125,12 @@ input[type=number], input[type=text] {
 	font-size: 1rem;
 	background: var(--card);
 	color: var(--text)
+}
+
+input[type=number]:disabled {
+	opacity: 0.5;
+	background: var(--bg);
+	cursor: not-allowed
 }
 
 button {
