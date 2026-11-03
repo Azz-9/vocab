@@ -362,3 +362,17 @@ button:hover:not(:disabled) {
 	height: 100%;
 	fill: var(--bad)
 }
+
+.category-hint {
+	display: inline-block;
+	margin-left: 8px;
+	font-size: 0.85em;
+	opacity: 0.7;
+}
+
+.choice-translation {
+	display: block;
+	margin-top: 5px;
+	font-size: 0.85em;
+	opacity: 0.8;
+}

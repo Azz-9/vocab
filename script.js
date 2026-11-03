@@ -89,7 +89,8 @@ function restoreLastSettings() {
 		if (saved.infiniteMode) {
 			el('infinite-cb').checked = true;
 			el('q-count').disabled = true;
-		} else if (saved.questionCount) {
+		}
+		if (saved.questionCount) {
 			el('q-count').value = saved.questionCount;
 		}
 
@@ -166,7 +167,7 @@ function buildSelectionUI() {
 	});
 
 	// Écouter les changements de poids pour mettre à jour le bouton start
-	container.closest('section').querySelector('#weights').addEventListener('input', () => {
+	document.querySelector('#weights').addEventListener('input', () => {
 		updateStartState();
 	});
 
@@ -229,20 +230,62 @@ function pickType(term) {
 	return entries[entries.length - 1][0];
 }
 
-// extractor(term) -> string à utiliser comme distracteur
-function randomDistractors(excludeTerm, extractor, n) {
-	const pool = POOL.filter(t => t !== excludeTerm).map(extractor).filter(Boolean);
-	const uniq = [...new Set(pool)];
-	const out = [];
-	while (out.length < n && uniq.length) {
-		const i = Math.floor(Math.random() * uniq.length);
-		out.push(uniq.splice(i, 1)[0]);
+// Construit des choix en conservant le terme d'origine.
+// Les doublons de texte sont évités : le choix correct est toujours prioritaire.
+function buildChoices(correctTerm, correctWord, extractor, n = 3) {
+	const correctChoice = {
+		word: correctWord,
+		term: correctTerm
+	};
+
+	const seen = new Set([normalize(correctWord)]);
+	const distractors = [];
+
+	const candidates = shuffle(POOL.filter(t => t !== correctTerm));
+
+	for (const term of candidates) {
+		if (distractors.length >= n) break;
+
+		const word = extractor(term);
+		if (!word) continue;
+
+		const key = normalize(word);
+		if (seen.has(key)) continue;
+
+		seen.add(key);
+		distractors.push({
+			word,
+			term
+		});
 	}
-	return out;
+
+	return shuffle([correctChoice, ...distractors]);
 }
 
-const frExtractor = t => t.fr[0];
-const enExtractor = t => randomEnVariant(t).word;
+const frExtractor = term => term.fr[0];
+const enExtractor = term => term.en[0].word;
+
+function drawTerm() {
+	if (TERM_DECK.length === 0) {
+		TERM_DECK = shuffle(POOL);
+
+		// Évite de reprendre immédiatement le dernier terme du paquet précédent.
+		// On utilise pop(), donc on vérifie le dernier élément du tableau.
+		if (
+			TERM_DECK.length > 1 &&
+			TERM_DECK[TERM_DECK.length - 1] === LAST_TERM
+		) {
+			const lastIndex = TERM_DECK.length - 1;
+			[TERM_DECK[0], TERM_DECK[lastIndex]] =
+				[TERM_DECK[lastIndex], TERM_DECK[0]];
+		}
+	}
+
+	const term = TERM_DECK.pop();
+	LAST_TERM = term;
+
+	return term;
+}
 
 function startQuiz() {
 	buildPool();
@@ -300,28 +343,12 @@ function bindAudioControls() {
 	};
 }
 
-function drawTerm() {
-	if (TERM_DECK.length === 0) {
-		TERM_DECK = shuffle(POOL);
-
-		// Évite de reprendre le dernier mot au début du nouveau paquet.
-		if (TERM_DECK.length > 1 && TERM_DECK[0] === LAST_TERM) {
-			const swapIndex = 1 + Math.floor(
-				Math.random() * (TERM_DECK.length - 1)
-			);
-			[TERM_DECK[0], TERM_DECK[swapIndex]] =
-				[TERM_DECK[swapIndex], TERM_DECK[0]];
-		}
-	}
-
-	LAST_TERM = TERM_DECK.shift();
-	return LAST_TERM;
-}
-
 function generateAndShowQuestion() {
 	const term = drawTerm();
+
 	CUR_TERM = term;
 	CUR_TYPE = pickType(term);
+
 	showQuestion();
 }
 
@@ -357,28 +384,81 @@ function showQuestion() {
 		renderIcons(card);
 	} else if (type === 'en_to_fr_choice' || type === 'audio_to_fr_choice') {
 		const correct = term.fr[0];
-		const choices = shuffle([correct, ...randomDistractors(term, frExtractor, 3)]);
+		const choices = buildChoices(term, correct, frExtractor);
+
 		let head = '';
 		let textHint = '';
+
+		const category = `<span class="category-hint">(${term.category})</span>`;
+
 		if (type === 'en_to_fr_choice') {
 			const variant = randomEnVariant(term);
-			head = `<div class="prompt">${variant.word}</div>${variant.phonetic ? `<div class="phonetic">/${variant.phonetic}/</div>` : ''}${variant.audio ? audioBtnHTML(variant.audio) : ''}`;
+
+			head = `
+            <div class="prompt">
+                ${variant.word} ${category}
+            </div>
+            ${variant.phonetic ? `<div class="phonetic">/${variant.phonetic}/</div>` : ''}
+            ${variant.audio ? audioBtnHTML(variant.audio) : ''}
+        `;
 		} else {
 			const variant = randomAudioVariant(term);
-			head = `<p class="hint">Écoute et choisis la traduction</p>${audioBtnHTML(variant.audio)}<div>${cantListenHTML()}</div>`;
+
+			head = `
+            <p class="hint">Écoute et choisis la traduction</p>
+            ${audioBtnHTML(variant.audio)}
+            ${category}
+            <div>${cantListenHTML()}</div>
+        `;
+
 			textHint = variant.word;
 		}
-		card.innerHTML = head + `<div class="choices">${choices.map(c => `<button class="choice-btn">${c}</button>`).join('')}</div>`;
-		bindChoices(correct, [correct], textHint);
+
+		card.innerHTML = head + `
+        <div class="choices">
+            ${choices.map((choice, i) => `
+                <button class="choice-btn" data-choice-index="${i}">
+                    ${choice.word}
+                </button>
+            `).join('')}
+        </div>
+    `;
+
+		bindChoices(
+			choices.find(c => c.term === term),
+			choices,
+			textHint,
+			'fr'
+		);
+
 		bindAudioControls();
 		renderIcons(card);
 	} else if (type === 'audio_to_en_choice') {
 		const variant = randomAudioVariant(term);
 		const correct = variant.word;
-		const choices = shuffle([correct, ...randomDistractors(term, enExtractor, 3)]);
-		card.innerHTML = `<p class="hint">Écoute et choisis le mot en anglais</p>${audioBtnHTML(variant.audio)}<div>${cantListenHTML()}</div>
-      <div class="choices">${choices.map(c => `<button class="choice-btn">${c}</button>`).join('')}</div>`;
-		bindChoices(correct, [correct], term.fr[0]);
+		const choices = buildChoices(term, correct, enExtractor);
+
+		card.innerHTML = `
+        <p class="hint">Écoute et choisis le mot en anglais</p>
+        ${audioBtnHTML(variant.audio)}
+        <div>${cantListenHTML()}</div>
+
+        <div class="choices">
+            ${choices.map((choice, i) => `
+                <button class="choice-btn" data-choice-index="${i}">
+                    ${choice.word}
+                </button>
+            `).join('')}
+        </div>
+    `;
+
+		bindChoices(
+			choices.find(c => c.term === term),
+			choices,
+			term.fr[0],
+			'en'
+		);
+
 		bindAudioControls();
 		renderIcons(card);
 	}
@@ -402,48 +482,50 @@ function getChoiceTranslation(choice, type) {
 	return '';
 }
 
-function revealChoiceTranslations() {
+function bindChoices(correctChoice, choices, textHint, direction) {
 	document.querySelectorAll('.choice-btn').forEach(btn => {
-		const choice = btn.dataset.choice;
-		const translation = getChoiceTranslation(choice, CUR_TYPE);
-
-		if (!translation || btn.querySelector('.choice-translation')) return;
-
-		const span = document.createElement('span');
-		span.className = 'choice-translation';
-		span.textContent = ` — ${translation}`;
-		btn.appendChild(span);
-	});
-}
-
-function bindChoices(correct, acceptedList, textHint) {
-	document.querySelectorAll('.choice-btn').forEach(btn => {
-		btn.dataset.choice = btn.textContent.trim();
-
 		btn.onclick = () => {
 			if (SELECTED_ANSWER_LOCKED) return;
 			SELECTED_ANSWER_LOCKED = true;
 
-			const selected = btn.dataset.choice;
-			const ok = normalize(selected) === normalize(correct);
+			const index = Number(btn.dataset.choiceIndex);
+			const selectedChoice = choices[index];
+			const ok = selectedChoice.term === correctChoice.term;
+
+			// Colore la réponse sélectionnée.
 			btn.classList.add(ok ? 'correct' : 'wrong');
 
+			// Affiche la bonne réponse en vert si l'utilisateur s'est trompé.
 			if (!ok) {
-				document.querySelectorAll('.choice-btn').forEach(b => {
-					if (normalize(b.dataset.choice) === normalize(correct)) {
+				document.querySelectorAll('.choice-btn').forEach((b, i) => {
+					if (choices[i].term === correctChoice.term) {
 						b.classList.add('correct');
 					}
 				});
 			}
 
-			revealChoiceTranslations();
-			registerResult(ok, acceptedList.join(' / '), textHint);
+			// Affiche la traduction de chaque choix après validation.
+			document.querySelectorAll('.choice-btn').forEach((b, i) => {
+				const choice = choices[i];
+
+				const translation = direction === 'fr'
+					? choice.term.en.map(w => w.word).join(' / ')
+					: choice.term.fr.join(' / ');
+
+				const span = document.createElement('span');
+				span.className = 'choice-translation';
+				span.textContent = ` — ${translation}`;
+
+				b.appendChild(span);
+			});
+
+			registerResult(ok, correctChoice.word, textHint);
 		};
 	});
 }
 
 function normalize(s) {
-	return s.trim().toLowerCase();
+	return s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
 // Enlève le contenu entre parenthèses (y compris imbriquées), ex: "Cart (US) (trolley (UK))" -> "Cart"
