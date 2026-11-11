@@ -362,7 +362,11 @@ function showQuestion() {
 
 	if (type === 'fr_to_en_type') {
 		const accepted = term.en.map(w => w.word);
+		const category = document.querySelectorAll('.cat-cb:checked').length > 1
+			? `<div class="category-hint">${term.category}</div>`
+			: '';
 		card.innerHTML = `<div class="prompt">${term.fr.join(' / ')}</div>
+      ${category}
       <p class="hint">Écris le mot en anglais</p>
       <div class="type-row"><input type="text" id="answer-input" autocomplete="off"><button id="submit-btn">Valider</button></div>`;
 		el('submit-btn').onclick = () => checkTyped(el('answer-input').value, accepted);
