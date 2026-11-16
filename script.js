@@ -15,6 +15,7 @@ const TYPE_LABELS = {
 	audio_type_en: 'Audio → EN (texte)'
 };
 
+const DEFAULT_WEIGHTS = {...WEIGHTS};
 const AUDIO_BLOCK_MS = 15 * 60 * 1000;
 const STORAGE_PREFIX = 'vocab-';
 const AUDIO_BLOCK_KEY = STORAGE_PREFIX + 'audioBlockedUntil';
@@ -60,11 +61,38 @@ function buildWeightsUI() {
 	container.querySelectorAll('input').forEach(inp => {
 		inp.addEventListener('input', () => {
 			WEIGHTS[inp.dataset.type] = Math.max(0, Math.round(+inp.value) || 0);
+			// Sauvegarder les poids dans l'objet settings
+			try {
+				const settings = JSON.parse(localStorage.getItem(LAST_SETTINGS_KEY)) || {};
+				settings.weights = {...WEIGHTS};
+				localStorage.setItem(LAST_SETTINGS_KEY, JSON.stringify(settings));
+			} catch (e) { /* ignore */
+			}
 		});
 	});
 }
 
 buildWeightsUI();
+
+// ---- Bouton de réinitialisation des poids ----
+el('reset-weights-btn').addEventListener('click', () => {
+	Object.keys(DEFAULT_WEIGHTS).forEach(key => {
+		WEIGHTS[key] = DEFAULT_WEIGHTS[key];
+	});
+	document.querySelectorAll('#weights input').forEach(inp => {
+		if (DEFAULT_WEIGHTS[inp.dataset.type] !== undefined) {
+			inp.value = DEFAULT_WEIGHTS[inp.dataset.type];
+		}
+	});
+	// Réinitialiser les poids dans l'objet settings
+	try {
+		const settings = JSON.parse(localStorage.getItem(LAST_SETTINGS_KEY)) || {};
+		delete settings.weights;
+		localStorage.setItem(LAST_SETTINGS_KEY, JSON.stringify(settings));
+	} catch (e) { /* ignore */
+	}
+	updateStartState();
+});
 
 // ---- Stockage / restauration des settings du dernier quiz ----
 function saveLastSettings() {
@@ -78,6 +106,7 @@ function saveLastSettings() {
 	if (!settings.infiniteMode) {
 		settings.questionCount = +el('q-count').value;
 	}
+	settings.weights = {...WEIGHTS};
 	localStorage.setItem(LAST_SETTINGS_KEY, JSON.stringify(settings));
 }
 
@@ -98,6 +127,21 @@ function restoreLastSettings() {
 			saved.selectedCategories.forEach(({sem, cat}) => {
 				const cb = document.querySelector(`.cat-cb[data-sem="${sem}"][data-cat="${cat}"]`);
 				if (cb) cb.checked = true;
+			});
+		}
+
+		// Restaurer les poids sauvegardés dans les settings
+		if (saved.weights) {
+			Object.keys(WEIGHTS).forEach(key => {
+				if (saved.weights[key] !== undefined) {
+					WEIGHTS[key] = saved.weights[key];
+				}
+			});
+			// Mettre à jour les inputs
+			document.querySelectorAll('#weights input').forEach(inp => {
+				if (WEIGHTS[inp.dataset.type] !== undefined) {
+					inp.value = WEIGHTS[inp.dataset.type];
+				}
 			});
 		}
 	} catch (e) {
