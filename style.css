@@ -376,3 +376,19 @@ button:hover:not(:disabled) {
 	font-size: 0.85em;
 	opacity: 0.8;
 }
+
+/* FR→EN multi-étapes : traductions trouvées et manquées */
+.fr-en-found-list {
+	margin: 12px 0 6px;
+	font-size: 1.1rem;
+}
+
+.fr-en-found {
+	color: var(--good);
+	font-weight: 600;
+}
+
+.fr-en-missed {
+	color: var(--bad);
+	font-weight: 600;
+}

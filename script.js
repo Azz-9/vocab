@@ -31,6 +31,8 @@ let CUR_TERM = null, CUR_TYPE = null;
 let SELECTED_ANSWER_LOCKED = false;
 let TERM_DECK = [];
 let LAST_TERM = null;
+// État pour les questions fr_to_en_type multi-étapes
+let FR_TO_EN_STATE = null; // { allAccepted: string[], found: string[] }
 
 const el = id => document.getElementById(id);
 
@@ -387,6 +389,130 @@ function bindAudioControls() {
 	};
 }
 
+// ---- FR→EN multi-étapes : afficher l'input pour l'étape courante ----
+function renderFrToEnStep(card, category, term) {
+	const state = FR_TO_EN_STATE;
+	const found = state.found.length;
+	const total = state.allAccepted.length;
+	const remaining = total - found;
+
+	// Construire la liste des traductions déjà trouvées
+	const foundList = state.found.map(w => `<span class="fr-en-found">${w} ✓</span>`);
+	const foundHTML = foundList.length
+		? `<div class="fr-en-found-list">${foundList.join(' / ')}</div>`
+		: '';
+
+	const stepHint = total > 1
+		? `Écris le mot en anglais (${remaining} restant${remaining > 1 ? 's' : ''})`
+		: 'Écris le mot en anglais';
+
+	card.innerHTML = `
+		<div class="prompt">${term.fr.join(' / ')}</div>
+		${category}
+		${foundHTML}
+		<p class="hint">${stepHint}</p>
+		<div class="type-row"><input type="text" id="answer-input" autocomplete="off"><button id="submit-btn">Valider</button></div>
+	`;
+
+	el('submit-btn').onclick = () => checkFrToEnTyped(el('answer-input').value);
+	el('answer-input').onkeydown = e => {
+		if (e.key === 'Enter') checkFrToEnTyped(el('answer-input').value);
+	};
+	el('answer-input').focus();
+}
+
+// ---- FR→EN multi-étapes : vérifier la réponse courante ----
+function checkFrToEnTyped(value) {
+	if (SELECTED_ANSWER_LOCKED) return;
+
+	const state = FR_TO_EN_STATE;
+
+	// Trouver si la réponse correspond à une traduction non encore trouvée
+	const normalizedValue = normalize(value);
+	let matchedWord = null;
+	for (const accepted of state.allAccepted) {
+		if (state.found.includes(accepted)) continue; // déjà trouvée
+		if (normalize(stripParens(accepted)) === normalizedValue) {
+			matchedWord = accepted;
+			break;
+		}
+	}
+
+	if (matchedWord) {
+		// Bonne réponse : on ajoute la traduction trouvée
+		state.found.push(matchedWord);
+
+		if (state.found.length >= state.allAccepted.length) {
+			// Toutes les traductions trouvées !
+			SELECTED_ANSWER_LOCKED = true;
+			SCORE++;
+			REVIEW.push({term: CUR_TERM, ok: true, correctText: state.allAccepted.join(' / ')});
+
+			// Afficher le feedback de succès
+			const fb = el('feedback');
+			fb.classList.remove('hidden', 'ok', 'ko');
+			fb.classList.add('ok');
+			fb.innerHTML = `<span class="icon-wrap icon-correct" data-icon="correct"></span>
+				<span>Correct !</span>`;
+			renderIcons(fb);
+			el('next-btn').classList.remove('hidden');
+
+			// Mettre à jour la carte pour montrer toutes les traductions trouvées
+			const card = el('question-card');
+			const category = document.querySelectorAll('.cat-cb:checked').length > 1
+				? `<div class="category-hint">${CUR_TERM.category}</div>`
+				: '';
+			const foundList = state.found.map(w => `<span class="fr-en-found">${w} ✓</span>`).join(' / ');
+			card.innerHTML = `
+				<div class="prompt">${CUR_TERM.fr.join(' / ')}</div>
+				${category}
+				<div class="fr-en-found-list">${foundList}</div>
+			`;
+		} else {
+			// Il reste des traductions : afficher l'étape suivante
+			const card = el('question-card');
+			const category = document.querySelectorAll('.cat-cb:checked').length > 1
+				? `<div class="category-hint">${CUR_TERM.category}</div>`
+				: '';
+			renderFrToEnStep(card, category, CUR_TERM);
+		}
+	} else {
+		// Mauvaise réponse : on affiche les traductions non trouvées
+		SELECTED_ANSWER_LOCKED = true;
+
+		// Les traductions manquées = celles qui ne sont pas dans state.found
+		const missed = state.allAccepted.filter(w => !state.found.includes(w));
+		const missedText = missed.join(' / ');
+
+		REVIEW.push({term: CUR_TERM, ok: false, correctText: state.allAccepted.join(' / ')});
+
+		// Afficher le feedback d'erreur
+		const fb = el('feedback');
+		fb.classList.remove('hidden', 'ok', 'ko');
+		fb.classList.add('ko');
+		fb.innerHTML = `<span class="icon-wrap icon-wrong" data-icon="wrong"></span>
+			<span>Faux — traductions manquantes : ${missedText}</span>`;
+		renderIcons(fb);
+		el('next-btn').classList.remove('hidden');
+
+		// Mettre à jour la carte pour montrer ce qui a été trouvé et ce qui manquait
+		const card = el('question-card');
+		const category = document.querySelectorAll('.cat-cb:checked').length > 1
+			? `<div class="category-hint">${CUR_TERM.category}</div>`
+			: '';
+
+		const foundList = state.found.map(w => `<span class="fr-en-found">${w} ✓</span>`);
+		const missedList = missed.map(w => `<span class="fr-en-missed">${w}</span>`);
+		const allList = [...foundList, ...missedList].join(' / ');
+
+		card.innerHTML = `
+			<div class="prompt">${CUR_TERM.fr.join(' / ')}</div>
+			${category}
+			<div class="fr-en-found-list">${allList}</div>
+		`;
+	}
+}
+
 function generateAndShowQuestion() {
 	const term = drawTerm();
 
@@ -409,15 +535,15 @@ function showQuestion() {
 		const category = document.querySelectorAll('.cat-cb:checked').length > 1
 			? `<div class="category-hint">${term.category}</div>`
 			: '';
-		card.innerHTML = `<div class="prompt">${term.fr.join(' / ')}</div>
-      ${category}
-      <p class="hint">Écris le mot en anglais</p>
-      <div class="type-row"><input type="text" id="answer-input" autocomplete="off"><button id="submit-btn">Valider</button></div>`;
-		el('submit-btn').onclick = () => checkTyped(el('answer-input').value, accepted);
-		el('answer-input').onkeydown = e => {
-			if (e.key === 'Enter') checkTyped(el('answer-input').value, accepted);
+
+		// Initialiser l'état multi-étapes : l'utilisateur peut trouver les traductions dans n'importe quel ordre
+		FR_TO_EN_STATE = {
+			allAccepted: accepted,
+			found: []
 		};
-		el('answer-input').focus();
+
+		// Afficher la première étape
+		renderFrToEnStep(card, category, term);
 	} else if (type === 'audio_type_en') {
 		const variant = randomAudioVariant(term);
 		card.innerHTML = `<p class="hint">Écoute et écris le mot en anglais</p>
