@@ -457,7 +457,7 @@ function checkFrToEnTyped(value) {
 			renderIcons(fb);
 			el('next-btn').classList.remove('hidden');
 
-			// Mettre à jour la carte pour montrer toutes les traductions trouvées
+			// Mettre à jour la carte pour montrer toutes les traductions trouvées et garder l'input visible
 			const card = el('question-card');
 			const category = document.querySelectorAll('.cat-cb:checked').length > 1
 				? `<div class="category-hint">${CUR_TERM.category}</div>`
@@ -467,6 +467,7 @@ function checkFrToEnTyped(value) {
 				<div class="prompt">${CUR_TERM.fr.join(' / ')}</div>
 				${category}
 				<div class="fr-en-found-list">${foundList}</div>
+				<div class="type-row"><input type="text" id="answer-input" autocomplete="off" disabled value="${state.found[0]}"></div>
 			`;
 		} else {
 			// Il reste des traductions : afficher l'étape suivante
@@ -490,12 +491,15 @@ function checkFrToEnTyped(value) {
 		const fb = el('feedback');
 		fb.classList.remove('hidden', 'ok', 'ko');
 		fb.classList.add('ko');
+
+		// "traductions manquantes" seulement s'il y a plusieurs traductions au total
+		const label = state.allAccepted.length > 1 ? 'traductions manquantes' : 'réponse';
 		fb.innerHTML = `<span class="icon-wrap icon-wrong" data-icon="wrong"></span>
-			<span>Faux — traductions manquantes : ${missedText}</span>`;
+			<span>Faux — ${label} : ${missedText}</span>`;
 		renderIcons(fb);
 		el('next-btn').classList.remove('hidden');
 
-		// Mettre à jour la carte pour montrer ce qui a été trouvé et ce qui manquait
+		// Mettre à jour la carte pour montrer ce qui a été trouvé et ce qui manquait, avec l'input visible
 		const card = el('question-card');
 		const category = document.querySelectorAll('.cat-cb:checked').length > 1
 			? `<div class="category-hint">${CUR_TERM.category}</div>`
@@ -509,6 +513,7 @@ function checkFrToEnTyped(value) {
 			<div class="prompt">${CUR_TERM.fr.join(' / ')}</div>
 			${category}
 			<div class="fr-en-found-list">${allList}</div>
+			<div class="type-row"><input type="text" id="answer-input" autocomplete="off" disabled value="${missed[0] || ''}"></div>
 		`;
 	}
 }

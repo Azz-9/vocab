@@ -989,12 +989,12 @@
                     {
                         "en": [
                             {
-                                "word": "Flavor (US) (Flavour (UK))",
+                                "word": "Flavor (US)",
                                 "phonetic": "ˈfleɪvə",
                                 "audio": "assets/audio/flavor.ogg"
                             },
                             {
-                                "word": "Flavour (UK) (Flavor (US))",
+                                "word": "Flavour (UK)",
                                 "phonetic": "ˈfleɪvə",
                                 "audio": "assets/audio/flavor.ogg"
                             }
@@ -1018,12 +1018,12 @@
                     {
                         "en": [
                             {
-                                "word": "French fries (US) (Chips (UK))",
+                                "word": "French fries (US)",
                                 "phonetic": null,
                                 "audio": null
                             },
                             {
-                                "word": "Chips (UK) (French fries (US))",
+                                "word": "Chips (UK)",
                                 "phonetic": "t͡ʃɪps",
                                 "audio": null
                             }
@@ -2250,12 +2250,12 @@
                     {
                         "en": [
                             {
-                                "word": "Cart (US) (Trolley (UK))",
+                                "word": "Cart (US)",
                                 "phonetic": "kärt",
                                 "audio": "assets/audio/cart.ogg"
                             },
                             {
-                                "word": "Trolley (UK) (Cart (US))",
+                                "word": "Trolley (UK)",
                                 "phonetic": "ˈträlē",
                                 "audio": null
                             }
@@ -2800,12 +2800,12 @@
                     {
                         "en": [
                             {
-                                "word": "Round trip ticket (US) (Return ticket (UK))",
+                                "word": "Round trip ticket (US)",
                                 "phonetic": null,
                                 "audio": null
                             },
                             {
-                                "word": "Return ticket (UK) (Round trip ticket (US))",
+                                "word": "Return ticket (UK)",
                                 "phonetic": null,
                                 "audio": null
                             }
@@ -3590,12 +3590,12 @@
                     {
                         "en": [
                             {
-                                "word": "Intern (US) (Trainee (UK))",
+                                "word": "Intern (US)",
                                 "phonetic": "ɪnˈtɝn",
                                 "audio": "assets/audio/intern.wav"
                             },
                             {
-                                "word": "Trainee (UK) (Intern (US))",
+                                "word": "Trainee (UK)",
                                 "phonetic": "tɹeɪˈni",
                                 "audio": "assets/audio/trainee.wav"
                             }
@@ -3607,12 +3607,12 @@
                     {
                         "en": [
                             {
-                                "word": "Internship (US) (Job placement (UK))",
+                                "word": "Internship (US)",
                                 "phonetic": "ˈɪntɜːnʃɪp",
                                 "audio": "assets/audio/internship.ogg"
                             },
                             {
-                                "word": "Job placement (UK) (Internship (US))",
+                                "word": "Job placement (UK)",
                                 "phonetic": null,
                                 "audio": null
                             }
@@ -5219,12 +5219,12 @@
                     {
                         "en": [
                             {
-                                "word": "Lorry (UK) (Truck (US))",
+                                "word": "Lorry (UK)",
                                 "phonetic": "ˈlɒɹi",
                                 "audio": "assets/audio/lorry.ogg"
                             },
                             {
-                                "word": "Truck (US) (Lorry (UK))",
+                                "word": "Truck (US)",
                                 "phonetic": "tɹʌk",
                                 "audio": "assets/audio/truck.ogg"
                             }
@@ -6017,12 +6017,12 @@
                     {
                         "en": [
                             {
-                                "word": "Intern (US) (Trainee (UK))",
+                                "word": "Intern (US)",
                                 "phonetic": "ɪnˈtɝn",
                                 "audio": "assets/audio/intern.wav"
                             },
                             {
-                                "word": "Trainee (UK) (Intern (US))",
+                                "word": "Trainee (UK)",
                                 "phonetic": "tɹeɪˈni",
                                 "audio": "assets/audio/trainee.wav"
                             }
@@ -6034,12 +6034,12 @@
                     {
                         "en": [
                             {
-                                "word": "Internship (US) (Job placement (UK))",
+                                "word": "Internship (US)",
                                 "phonetic": "ˈɪntɜːnʃɪp",
                                 "audio": "assets/audio/internship.ogg"
                             },
                             {
-                                "word": "Job placement (UK) (Internship (US))",
+                                "word": "Job placement (UK)",
                                 "phonetic": null,
                                 "audio": null
                             }
@@ -6716,12 +6716,12 @@
                     {
                         "en": [
                             {
-                                "word": "Behavior (US) (Behaviour (UK))",
+                                "word": "Behavior (US)",
                                 "phonetic": "bəˈhāvyər",
                                 "audio": "assets/audio/behavior.wav"
                             },
                             {
-                                "word": "Behaviour (UK) (Behavior (US))",
+                                "word": "Behaviour (UK)",
                                 "phonetic": "bəˈhāvyər",
                                 "audio": "assets/audio/behavior.wav"
                             }
@@ -6942,12 +6942,12 @@
                     {
                         "en": [
                             {
-                                "word": "Hoarding (UK) (Billboard (US))",
+                                "word": "Hoarding (UK)",
                                 "phonetic": "ˈhɔːdɪŋ",
                                 "audio": "assets/audio/hoarding.wav"
                             },
                             {
-                                "word": "Billboard (US) (Hoarding (UK))",
+                                "word": "Billboard (US)",
                                 "phonetic": "ˈbɪlˌboɹd",
                                 "audio": null
                             }
@@ -8815,12 +8815,12 @@
                     {
                         "en": [
                             {
-                                "word": "Gas (US) (Petrol (UK))",
+                                "word": "Gas (US)",
                                 "phonetic": "ɡæs",
                                 "audio": "assets/audio/gas.ogg"
                             },
                             {
-                                "word": "Petrol (UK) (Gas (US))",
+                                "word": "Petrol (UK)",
                                 "phonetic": "ˈpɛt.ɹəl",
                                 "audio": null
                             }
@@ -8832,12 +8832,12 @@
                     {
                         "en": [
                             {
-                                "word": "Gas station (US) (Petrol station (UK))",
+                                "word": "Gas station (US)",
                                 "phonetic": "ˈɡæs stɛɪːʃən",
                                 "audio": "assets/audio/gas_station.wav"
                             },
                             {
-                                "word": "Petrol station (UK) (Gas station (US))",
+                                "word": "Petrol station (UK)",
                                 "phonetic": null,
                                 "audio": null
                             }
@@ -8861,12 +8861,12 @@
                     {
                         "en": [
                             {
-                                "word": "Highway (US) (Motorway (UK))",
+                                "word": "Highway (US)",
                                 "phonetic": "ˈhaɪweɪ",
                                 "audio": "assets/audio/highway.ogg"
                             },
                             {
-                                "word": "Motorway (UK) (Highway (US))",
+                                "word": "Motorway (UK)",
                                 "phonetic": "ˈməʊtəweɪ",
                                 "audio": null
                             }
@@ -8902,12 +8902,12 @@
                     {
                         "en": [
                             {
-                                "word": "Hood (US) (Bonnet (UK))",
+                                "word": "Hood (US)",
                                 "phonetic": "hʊd",
                                 "audio": "assets/audio/hood.ogg"
                             },
                             {
-                                "word": "Bonnet (UK) (Hood (US))",
+                                "word": "Bonnet (UK)",
                                 "phonetic": "ˈbɒnɪt",
                                 "audio": null
                             }
@@ -8991,12 +8991,12 @@
                     {
                         "en": [
                             {
-                                "word": "License plate (US) (Number plate (UK))",
+                                "word": "License plate (US)",
                                 "phonetic": "ˈlaɪ.sənsˌpleɪt",
                                 "audio": null
                             },
                             {
-                                "word": "Number plate (UK) (License plate (US))",
+                                "word": "Number plate (UK)",
                                 "phonetic": null,
                                 "audio": null
                             }
@@ -9008,12 +9008,12 @@
                     {
                         "en": [
                             {
-                                "word": "Lot (US) (Car park (UK))",
+                                "word": "Lot (US)",
                                 "phonetic": "lɒt",
                                 "audio": "assets/audio/lot.ogg"
                             },
                             {
-                                "word": "Car park (UK) (Lot (US))",
+                                "word": "Car park (UK)",
                                 "phonetic": "ˈkɑːpɑːk",
                                 "audio": null
                             }
@@ -9169,12 +9169,12 @@
                     {
                         "en": [
                             {
-                                "word": "Sidewalk (US) (Pavement (UK))",
+                                "word": "Sidewalk (US)",
                                 "phonetic": "ˈsaɪdwɔːk",
                                 "audio": "assets/audio/sidewalk.ogg"
                             },
                             {
-                                "word": "Pavement (UK) (Sidewalk (US))",
+                                "word": "Pavement (UK)",
                                 "phonetic": "ˈpeɪvm(ə)nt",
                                 "audio": null
                             }
@@ -9222,12 +9222,12 @@
                     {
                         "en": [
                             {
-                                "word": "Tire (US) (Tyre (UK))",
+                                "word": "Tire (US)",
                                 "phonetic": "ˈtaɪ̯ə(ɹ)",
                                 "audio": null
                             },
                             {
-                                "word": "Tyre (UK) (Tire (US))",
+                                "word": "Tyre (UK)",
                                 "phonetic": "taɪə(ɹ)",
                                 "audio": null
                             }
@@ -9287,12 +9287,12 @@
                     {
                         "en": [
                             {
-                                "word": "Truck (US) (Lorry (UK))",
+                                "word": "Truck (US)",
                                 "phonetic": "tɹʌk",
                                 "audio": "assets/audio/truck.ogg"
                             },
                             {
-                                "word": "Lorry (UK) (Truck (US))",
+                                "word": "Lorry (UK)",
                                 "phonetic": "ˈlɒɹi",
                                 "audio": "assets/audio/lorry.ogg"
                             }
@@ -9304,12 +9304,12 @@
                     {
                         "en": [
                             {
-                                "word": "Trunk (US) (Boot (UK))",
+                                "word": "Trunk (US)",
                                 "phonetic": "tɹʌŋk",
                                 "audio": "assets/audio/trunk.ogg"
                             },
                             {
-                                "word": "Boot (UK) (Trunk (US))",
+                                "word": "Boot (UK)",
                                 "phonetic": "buːt",
                                 "audio": null
                             }
@@ -9321,12 +9321,12 @@
                     {
                         "en": [
                             {
-                                "word": "Turnpike (US) (Toll road (UK))",
+                                "word": "Turnpike (US)",
                                 "phonetic": "ˈtɜː(ɹ)npaɪk",
                                 "audio": "assets/audio/turnpike.wav"
                             },
                             {
-                                "word": "Toll road (UK) (Turnpike (US))",
+                                "word": "Toll road (UK)",
                                 "phonetic": null,
                                 "audio": null
                             }
@@ -9374,12 +9374,12 @@
                     {
                         "en": [
                             {
-                                "word": "Windshield (US) (Windscreen (UK))",
+                                "word": "Windshield (US)",
                                 "phonetic": "wɪnˈʃiːld",
                                 "audio": "assets/audio/windshield.wav"
                             },
                             {
-                                "word": "Windscreen (UK) (Windshield (US))",
+                                "word": "Windscreen (UK)",
                                 "phonetic": "ˈwɪn(d).skɹiːn",
                                 "audio": null
                             }
@@ -9432,12 +9432,12 @@
                     {
                         "en": [
                             {
-                                "word": "Banknote (UK) (Bill (US))",
+                                "word": "Banknote (UK)",
                                 "phonetic": "ˈbæŋknəʊ̯t",
                                 "audio": "assets/audio/banknote.wav"
                             },
                             {
-                                "word": "Bill (US) (Banknote (UK))",
+                                "word": "Bill (US)",
                                 "phonetic": "ˈbɪl",
                                 "audio": null
                             }
@@ -10479,12 +10479,12 @@
                     {
                         "en": [
                             {
-                                "word": "Installment (US) (Instalment (UK))",
+                                "word": "Installment (US)",
                                 "phonetic": "ɪnˈstɔːl.mənt",
                                 "audio": "assets/audio/installment.wav"
                             },
                             {
-                                "word": "Instalment (UK) (Installment (US))",
+                                "word": "Instalment (UK)",
                                 "phonetic": "ɪnˈstɔːl.mənt",
                                 "audio": null
                             }
