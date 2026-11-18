@@ -402,9 +402,7 @@ function renderFrToEnStep(card, category, term) {
 		? `<div class="fr-en-found-list">${foundList.join(' / ')}</div>`
 		: '';
 
-	const stepHint = total > 1
-		? `Écris le mot en anglais (${remaining} restant${remaining > 1 ? 's' : ''})`
-		: 'Écris le mot en anglais';
+		const stepHint = 'Écris le mot en anglais';
 
 	card.innerHTML = `
 		<div class="prompt">${term.fr.join(' / ')}</div>
@@ -468,7 +466,7 @@ function checkFrToEnTyped(value) {
 				<div class="prompt">${CUR_TERM.fr.join(' / ')}</div>
 				${category}
 				<div class="fr-en-found-list">${foundList}</div>
-				<div class="type-row"><input type="text" id="answer-input" autocomplete="off" disabled value="${lastValue}"></div>
+				<div class="type-row"><input type="text" id="answer-input" autocomplete="off" value="${lastValue}"></div>
 			`;
 		} else {
 			// Il reste des traductions : afficher l'étape suivante
@@ -515,7 +513,7 @@ function checkFrToEnTyped(value) {
 			<div class="prompt">${CUR_TERM.fr.join(' / ')}</div>
 			${category}
 			<div class="fr-en-found-list">${allList}</div>
-			<div class="type-row"><input type="text" id="answer-input" autocomplete="off" disabled value="${lastValue}"></div>
+			<div class="type-row"><input type="text" id="answer-input" autocomplete="off" value="${lastValue}"></div>
 		`;
 	}
 }
