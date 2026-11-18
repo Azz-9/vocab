@@ -457,17 +457,18 @@ function checkFrToEnTyped(value) {
 			renderIcons(fb);
 			el('next-btn').classList.remove('hidden');
 
-			// Mettre à jour la carte pour montrer toutes les traductions trouvées et garder l'input visible
+ 		// Mettre à jour la carte pour montrer toutes les traductions trouvées et garder l'input visible
 			const card = el('question-card');
 			const category = document.querySelectorAll('.cat-cb:checked').length > 1
 				? `<div class="category-hint">${CUR_TERM.category}</div>`
 				: '';
 			const foundList = state.found.map(w => `<span class="fr-en-found">${w} ✓</span>`).join(' / ');
+			const lastValue = escapeHtml(value);
 			card.innerHTML = `
 				<div class="prompt">${CUR_TERM.fr.join(' / ')}</div>
 				${category}
 				<div class="fr-en-found-list">${foundList}</div>
-				<div class="type-row"><input type="text" id="answer-input" autocomplete="off" disabled value="${state.found[0]}"></div>
+				<div class="type-row"><input type="text" id="answer-input" autocomplete="off" disabled value="${lastValue}"></div>
 			`;
 		} else {
 			// Il reste des traductions : afficher l'étape suivante
@@ -509,11 +510,12 @@ function checkFrToEnTyped(value) {
 		const missedList = missed.map(w => `<span class="fr-en-missed">${w}</span>`);
 		const allList = [...foundList, ...missedList].join(' / ');
 
+		const lastValue = escapeHtml(value);
 		card.innerHTML = `
 			<div class="prompt">${CUR_TERM.fr.join(' / ')}</div>
 			${category}
 			<div class="fr-en-found-list">${allList}</div>
-			<div class="type-row"><input type="text" id="answer-input" autocomplete="off" disabled value="${missed[0] || ''}"></div>
+			<div class="type-row"><input type="text" id="answer-input" autocomplete="off" disabled value="${lastValue}"></div>
 		`;
 	}
 }
@@ -715,6 +717,11 @@ function stripParens(s) {
 		s = s.replace(/\([^()]*\)/g, '');
 	} while (s !== prev);
 	return s.replace(/\s+/g, ' ').trim();
+}
+
+// Échappe les caractères HTML pour insérer du texte dans du HTML
+function escapeHtml(s) {
+	return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 function checkTyped(value, acceptedList, text) {
