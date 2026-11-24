@@ -394,7 +394,6 @@ function renderFrToEnStep(card, category, term) {
 	const state = FR_TO_EN_STATE;
 	const found = state.found.length;
 	const total = state.allAccepted.length;
-	const remaining = total - found;
 
 	// Construire la liste des traductions déjà trouvées
 	const foundList = state.found.map(w => `<span class="fr-en-found">${w} ✓</span>`);
@@ -402,7 +401,9 @@ function renderFrToEnStep(card, category, term) {
 		? `<div class="fr-en-found-list">${foundList.join(' / ')}</div>`
 		: '';
 
-		const stepHint = 'Écris le mot en anglais';
+	const stepHint = total > 1
+		? `Écris le mot en anglais (${found} / ${total})`
+		: 'Écris le mot en anglais';
 
 	card.innerHTML = `
 		<div class="prompt">${term.fr.join(' / ')}</div>
