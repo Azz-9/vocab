@@ -469,6 +469,7 @@ function checkFrToEnTyped(value) {
 				<div class="fr-en-found-list">${foundList}</div>
 				<div class="type-row"><input type="text" id="answer-input" autocomplete="off" value="${lastValue}"></div>
 			`;
+			el('answer-input').focus();
 		} else {
 			// Il reste des traductions : afficher l'étape suivante
 			const card = el('question-card');
@@ -516,6 +517,7 @@ function checkFrToEnTyped(value) {
 			<div class="fr-en-found-list">${allList}</div>
 			<div class="type-row"><input type="text" id="answer-input" autocomplete="off" value="${lastValue}"></div>
 		`;
+		el('answer-input').focus();
 	}
 }
 
