@@ -5678,11 +5678,21 @@
                     {
                         "en": [
                             {
-                                "word": "Chairman, Chairwoman, Chairperson",
+                                "word": "Chairman",
                                 "phonetic": null,
                                 "audio": null
-                            }
-                        ],
+                            },
+							{
+								"word": "Chairwoman",
+								"phonetic": null,
+								"audio": null
+							},
+							{
+								"word": "Chairperson",
+								"phonetic": null,
+								"audio": null
+							}
+						],
                         "fr": [
                             "Président.e (de séance)"
                         ]

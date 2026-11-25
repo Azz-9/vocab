@@ -644,24 +644,6 @@ function showQuestion() {
 	}
 }
 
-function getChoiceTranslation(choice, type) {
-	if (type === 'en_to_fr_choice' || type === 'audio_to_fr_choice') {
-		const term = POOL.find(t =>
-			t.fr.some(fr => normalize(fr) === normalize(choice))
-		);
-		return term ? term.en.map(w => w.word).join(' / ') : '';
-	}
-
-	if (type === 'audio_to_en_choice') {
-		const term = POOL.find(t =>
-			t.en.some(en => normalize(en.word) === normalize(choice))
-		);
-		return term ? term.fr.join(' / ') : '';
-	}
-
-	return '';
-}
-
 function bindChoices(correctChoice, choices, textHint, direction) {
 	document.querySelectorAll('.choice-btn').forEach(btn => {
 		btn.onclick = () => {
